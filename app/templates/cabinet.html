@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Shaxsiy kabinet — Kutubxonaga murojaat{% endblock %}
+{% block body %}
+<header class="topbar">
+  <div class="container topbar-inner">
+    <strong class="brand">Kutubxonaga murojaat</strong>
+    <form method="post" action="/logout">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <button type="submit" class="btn btn-ghost">Chiqish</button>
+    </form>
+  </div>
+</header>
+
+<main class="container">
+  <h1>Shaxsiy kabinet</h1>
+
+  <div class="grid">
+    <section class="reader-card" aria-labelledby="profile-h">
+      <h2 id="profile-h">Talaba ma’lumotlari</h2>
+      <dl>
+        <div class="row"><dt>F.I.O.</dt><dd>{{ user.full_name }}</dd></div>
+        <div class="row"><dt>Guruh</dt><dd>{{ user.group_name }}</dd></div>
+        <div class="row"><dt>Fakultet</dt><dd>{{ user.faculty }}</dd></div>
+        <div class="row"><dt>Yosh</dt><dd>{{ user.age }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="form-h">
+      <h2 id="form-h">Yangi murojaat</h2>
+
+      {% if sent %}<p class="alert alert-ok" role="status">Murojaatingiz yuborildi.</p>{% endif %}
+      {% if error %}<p class="alert alert-error" role="alert">{{ error }}</p>{% endif %}
+
+      <form method="post" action="/appeals">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+
+        <label for="book_title">Kitob nomi</label>
+        <input id="book_title" name="book_title" type="text" maxlength="200"
+               value="{{ form.book_title }}" required>
+
+        <label for="message">Murojaat matni</label>
+        <textarea id="message" name="message" rows="6" minlength="10" maxlength="2000"
+                  required>{{ form.message }}</textarea>
+
+        <button type="submit" class="btn">Yuborish</button>
+      </form>
+    </section>
+  </div>
+
+  <section class="history" aria-labelledby="history-h">
+    <h2 id="history-h">Yuborilgan murojaatlar</h2>
+    {% if appeals %}
+    <ul class="appeals">
+      {% for a in appeals %}
+      <li>
+        <div class="appeal-head">
+          <strong>{{ a.book_title }}</strong>
+          <time class="muted">{{ a.created_at | local_dt }}</time>
+        </div>
+        <p>{{ a.message }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Hali murojaat yuborilmagan. Yuqoridagi formani to‘ldiring.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}
